@@ -3,6 +3,8 @@
 > 适用于 Claude Code、Trae 等 AI 编程助手
 >
 > 详细规则：[rules/](rules/) 文件夹
+>
+> **新手用户**：请阅读 [rules/newbie.md](rules/newbie.md) 了解默认技术栈和选型规则
 
 ---
 
@@ -69,6 +71,7 @@
 | [security-baseline.md](rules/security-baseline.md) | 安全开发基线 |
 | [checklists.md](rules/checklists.md) | 提交/发布检查清单 |
 | [cheatsheets.md](rules/cheatsheets.md) | 工具链/Git 速查表 |
+| [newbie.md](rules/newbie.md) | 新手用户约束配置（技术栈选型/数据存储优先级） |
 
 ---
 
