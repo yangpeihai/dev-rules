@@ -1,6 +1,6 @@
 ---
 name: frontend-design
-description: 创建具有出色设计品质的独特生产级前端界面。当用户要求构建 Web 组件、页面、界面元素、海报或应用程序时（例如网站、落地页、仪表板、React 组件、HTML/CSS 布局，或任何需要美化样式的 Web UI），使用此技能。生成创意十足、精致且避免通用 AI 美学风格的代码。
+description: 创建具有出色设计品质的独特生产级前端界面。Build web components, pages, UI elements, landing pages, dashboards, React/Vue components, HTML/CSS layouts, or any Web UI requiring polished styling. Generate creative, sophisticated code that avoids generic AI aesthetics. Invoke when: designing user interfaces, creating responsive layouts, implementing animations, styling forms, building dashboards, writing technical documentation for UI components, or discussing frontend architecture decisions.
 license: 完整条款见 LICENSE.txt
 ---
 

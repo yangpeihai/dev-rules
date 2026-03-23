@@ -1,6 +1,6 @@
 ---
 name: java-rule
-description: 阿里巴巴 Java 开发规约专家。当用户需要编写 Java 代码、进行代码审查、修复代码质量问题、创建新项目结构、制定编码规范时使用此技能。覆盖编程规约、异常日志、单元测试、安全规约、工程结构、MySQL 数据库、Spring Boot、Spring MVC、Spring Cloud 微服务、MyBatis/MyBatis-Plus 十大维度。**特别提示**：涉及 Spring Boot 项目配置、Controller/Service 开发、REST 接口设计、微服务拆分、Feign 调用、配置中心、熔断降级、MyBatis 查询优化等场景时，务必使用此技能。
+description: 阿里巴巴 Java 开发规约专家。Cover programming standards, exception handling, logging, unit testing, security, MySQL database, Spring Boot, Spring MVC, Spring Cloud microservices, and MyBatis/MyBatis-Plus best practices. Invoke when: writing/reviewing Java code, designing REST APIs, configuring Spring Boot applications, developing Controller/Service layers, optimizing database queries, managing microservices, handling security concerns, writing technical documentation, or conducting code reviews against Alibaba Java guidelines.
 ---
 
 # 阿里巴巴 Java 开发规约专家

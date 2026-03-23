@@ -1,6 +1,6 @@
 ---
 name: "secure-development"
-description: "安全开发规范指南。Invoke when user needs help with input validation, SQL injection prevention, XSS/CSRF protection, authentication, authorization, sensitive data protection, or secure coding practices."
+description: "安全开发规范指南。Cover input validation, SQL injection prevention, XSS/CSRF protection, authentication, authorization, sensitive data protection, secure coding practices, and security best practices. Invoke when: implementing authentication/authorization, handling sensitive data, validating user input, preventing security vulnerabilities, writing security-related code, conducting security reviews, writing technical documentation for security protocols, or discussing secure architecture decisions."
 ---
 
 # 安全开发规范

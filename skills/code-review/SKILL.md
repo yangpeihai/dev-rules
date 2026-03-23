@@ -1,6 +1,6 @@
 ---
 name: "code-review"
-description: "代码审查规范指南。Invoke when user needs help with code review processes, reviewer responsibilities, feedback guidelines, review efficiency, merge conditions, or automated tool integration."
+description: "代码审查规范指南。Cover code review processes, reviewer responsibilities, feedback guidelines, review efficiency, merge conditions, automated tool integration, and quality assurance best practices. Invoke when: conducting code reviews, preparing code for review, defining review workflows, training reviewers, improving review efficiency, writing technical documentation for review processes, or discussing code quality standards."
 ---
 
 # 代码审查规范

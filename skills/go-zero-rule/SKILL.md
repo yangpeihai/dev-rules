@@ -1,6 +1,6 @@
 ---
 name: go-zero-rule
-description: Go-Zero 编码规范助手。帮助开发者在使用 go-zero 框架开发时遵循编码规范，包括项目结构、API/Proto 定义、代码生成、分层职责、错误处理、配置管理、日志规范、数据库操作、中间件、测试等最佳实践。当用户创建或修改 go-zero 项目、编写 Handler/Logic/Model 代码、使用 goctl 工具、定义 API/Proto 文件、进行代码审查时触发。
+description: Go-Zero 编码规范指南。Cover project structure, API/Proto definitions, code generation with goctl, layer responsibilities, error handling, config management, logging, database operations, and middleware best practices. Invoke when: creating/modifying go-zero API/RPC services, writing Handler/Logic/Model code, using goctl tool, defining API/Proto files, configuring services, writing unit tests, conducting code reviews, or writing technical documentation for go-zero projects.
 ---
 
 # Go-Zero 编码规范助手

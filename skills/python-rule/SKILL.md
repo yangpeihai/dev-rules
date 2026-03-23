@@ -1,6 +1,6 @@
 ---
 name: python-rule
-description: Python 编码规范助手。帮助开发者编写地道、安全、高性能的 Python 代码，涵盖代码风格、安全编码、性能优化、核心设计原则等最佳实践。当用户编写 Python 代码、进行代码审查、优化性能、处理安全问题、设计接口和模块时触发。
+description: Python 编码规范指南。Cover Python code style (PEP 8), type hints, security patterns, performance optimization, API design, and testing best practices. Invoke when: writing/reviewing Python code, designing APIs or data models, configuring Python projects (pyproject.toml, requirements.txt), debugging issues, refactoring legacy code, setting up CI/CD pipelines, writing technical documentation, or discussing Python architecture decisions.
 ---
 
 # Python 编码规范助手

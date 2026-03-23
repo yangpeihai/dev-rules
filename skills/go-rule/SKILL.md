@@ -1,6 +1,6 @@
 ---
 name: go-rule
-description: Go 语言编码规范助手。帮助开发者编写地道、安全、高性能的 Go 代码，涵盖代码风格、安全编码、性能优化、核心设计原则等最佳实践。当用户编写 Go 代码、进行代码审查、优化性能、处理安全问题、设计接口和包结构时触发。
+description: Go 语言编码规范指南。Cover Go code style (Effective Go), concurrency patterns, security, performance optimization, and package design best practices. Invoke when: writing/reviewing Go code, designing interfaces or packages, configuring Go modules (go.mod), handling concurrency (goroutines/channels), debugging issues, refactoring legacy code, writing technical documentation, or discussing Go architecture decisions.
 ---
 
 # Go 语言编码规范助手
