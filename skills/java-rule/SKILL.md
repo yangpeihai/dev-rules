@@ -24,12 +24,12 @@ description: 阿里巴巴 Java 开发规约专家。Cover programming standards,
 
 详细规约内容按维度拆分在以下参考文件中，需要时请读取对应文件：
 
-- **01-编程规约.md**：命名风格、常量定义、代码格式、OOP 规范、集合处理、并发处理、控制语句、注释规约
-- **02-异常日志.md**：异常处理、日志规范
-- **03-单元测试.md**：单元测试原则、覆盖率要求、BCDE 原则
-- **04-安全规约.md**：权限控制、数据脱敏、SQL 注入防护、CSRF 防护
+- **01-编程规约.md**：命名风格、常量定义、代码格式、OOP 规约、日期时间、集合处理、并发处理、控制语句、注释规约、前后端规约
+- **02-异常日志.md**：错误码、异常处理、日志规范
+- **03-单元测试.md**：AIR 原则、BCDE 原则、覆盖率要求
+- **04-安全规约.md**：权限控制、数据脱敏、SQL 注入防护、XSS/CSRF 防护、文件上传安全
 - **05-MySQL 数据库.md**：建表规约、索引规约、SQL 语句、ORM 映射
-- **06-工程结构.md**：应用分层、二方库依赖、服务器配置
+- **06-工程结构.md**：应用分层、二方库依赖、服务器配置、MVC 目录结构
 - **07-Spring Boot 开发规范.md**：项目配置、依赖管理、Controller/Service 规范、异常处理、配置类、启动类、日志规范、Actuator 监控
 - **08-Spring MVC 规范.md**：请求参数绑定、数据校验、拦截器、统一响应、全局异常处理、文件上传下载、RESTful 风格
 - **09-Spring Cloud 微服务规范.md**：服务注册发现、OpenFeign 通信、配置中心、网关、熔断降级、链路追踪、微服务拆分、分布式事务
@@ -43,12 +43,13 @@ description: 阿里巴巴 Java 开发规约专家。Cover programming standards,
 
 | 类型 | 规范 | 正例 | 反例 |
 |------|------|------|------|
-| 类名 | UpperCamelCase | UserDO / XmlService | UserDo / XMLService |
+| 类名 | UpperCamelCase | UserDO / XmlService / TcpUdpDeal | UserDo / XMLService / TCPUDPDeal |
 | 方法/变量 | lowerCamelCase | localValue / getHttpMessage() | local_value / getMessage |
-| 常量 | 全大写 + 下划线 | MAX_STOCK_COUNT | MAX_COUNT |
+| 常量 | 全大写 + 下划线 | MAX_STOCK_COUNT / CACHE_EXPIRED_TIME | MAX_COUNT / EXPIRED_TIME |
 | 包名 | 小写 + 单数 | com.alibaba.util | com.alibaba.Utils |
 | 异常类 | Exception 结尾 | BusinessException | Error |
 | 测试类 | Test 结尾 | UserServiceTest | TestUserService |
+| 枚举类 | Enum 后缀 + 全大写 | ProcessStatusEnum.SUCCESS | Status.success |
 
 ### 常见 NPE 场景
 
@@ -57,6 +58,15 @@ description: 阿里巴巴 Java 开发规约专家。Cover programming standards,
 - 集合元素取出可能为 null
 - 远程调用返回未判空
 - 级联调用 `obj.getA().getB().getC()`
+- 三目运算符自动拆箱
+
+### 日期时间要点
+
+- 年份用小写 `yyyy`，大写 `YYYY` 表示周所属年份
+- 月份大写 `M`，分钟小写 `m`
+- 24 小时制大写 `H`，12 小时制小写 `h`
+- 获取毫秒数用 `System.currentTimeMillis()`
+- 禁止使用 `java.sql.Date/Time/Timestamp`
 
 ### 线程池创建（正例）
 
@@ -85,7 +95,43 @@ logger.debug("Processing id: {} and name: {}", id, name);
 
 // 记录异常
 logger.error("Failed to process: " + param, e);
+
+// 级别判断
+if (logger.isDebugEnabled()) {
+    logger.debug("Debug info: {}", data);
+}
 ```
+
+### 浮点数比较
+
+```java
+// 错误：直接使用==
+if (a == b) { ... }
+
+// 正确：使用误差范围
+float diff = 1e-6F;
+if (Math.abs(a - b) < diff) { ... }
+
+// 或使用 BigDecimal
+BigDecimal x = new BigDecimal("1.0");
+BigDecimal y = new BigDecimal("0.9");
+if (x.compareTo(y) == 0) { ... }
+```
+
+### 集合处理要点
+
+- `toArray()` 传入类型为 `new String[0]`
+- 不要在 foreach 循环中 remove/add 元素
+- 使用 `isEmpty()` 而非 `size() == 0`
+- `subList()` 结果不可强转为 ArrayList
+- `toMap()` 需要处理 key 冲突和 null 值
+
+### 错误码规范
+
+- 格式：`[来源][4 位数字]`，如 `A0001`
+- A=用户端错误，B=系统执行出错，C=调用第三方服务出错
+- 全部正常返回 `00000`
+- 错误码不直接输出给用户
 
 ---
 
@@ -100,14 +146,16 @@ logger.error("Failed to process: " + param, e);
 当用户询问规范时：
 1. 定位相关规约维度
 2. 读取对应参考文件获取详细条款
-3. 引用具体条款
+3. 引用具体条款（注明强制/推荐/参考）
 4. 提供正例和反例
 5. 说明违反后果
 
 当用户创建新项目时：
 1. 读取 `06-工程结构.md` 提供分层架构建议
 2. 读取 `01-编程规约.md` 提供命名规范建议
-3. 读取 `07-Spring Boot 开发规范.md` 提供 Spring Boot 项目配置建议
-4. 读取 `09-Spring Cloud 微服务规范.md` 提供微服务拆分和通信建议
-5. 读取 `10-MyBatis 开发规范.md` 提供持久层配置建议
-6. 提供配置文件模板
+3. 读取 `05-MySQL 数据库.md` 提供数据库设计规范
+4. 读取 `02-异常日志.md` 提供错误码和日志规范
+5. 读取 `04-安全规约.md` 提供安全设计建议
+6. 读取 `07-Spring Boot 开发规范.md` 提供 Spring Boot 项目配置建议
+7. 读取 `09-Spring Cloud 微服务规范.md` 提供微服务拆分和通信建议
+8. 读取 `10-MyBatis 开发规范.md` 提供持久层配置建议
