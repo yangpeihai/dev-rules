@@ -50,6 +50,7 @@ description: 阿里巴巴 Java 开发规约专家。Cover programming standards,
 | 异常类 | Exception 结尾 | BusinessException | Error |
 | 测试类 | Test 结尾 | UserServiceTest | TestUserService |
 | 枚举类 | Enum 后缀 + 全大写 | ProcessStatusEnum.SUCCESS | Status.success |
+| **接口/实现类** | **接口无后缀，实现类 Impl 后缀** | **CacheService + CacheServiceImpl** | **CacheService + CacheServiceImp / CacheServiceDao** |
 
 ### 常见 NPE 场景
 
@@ -126,6 +127,57 @@ if (x.compareTo(y) == 0) { ... }
 - `subList()` 结果不可强转为 ArrayList
 - `toMap()` 需要处理 key 冲突和 null 值
 
+### 接口与实现类创建规则（重要）
+
+**【强制】**创建 Service/DAO 层代码时，必须同时创建接口和实现类：
+
+```java
+// 第一步：创建接口（定义契约）
+public interface UserService {
+    User getById(Long id);
+    List<User> listAll();
+    User create(UserCreateDTO dto);
+    void delete(Long id);
+}
+
+// 第二步：创建实现类（必须以 Impl 后缀命名）
+@Service
+public class UserServiceImpl implements UserService {
+
+    @Override
+    public User getById(Long id) {
+        // 实现逻辑
+    }
+
+    @Override
+    public List<User> listAll() {
+        // 实现逻辑
+    }
+
+    @Override
+    public User create(UserCreateDTO dto) {
+        // 实现逻辑
+    }
+
+    @Override
+    public void delete(Long id) {
+        // 实现逻辑
+    }
+}
+```
+
+**核心规则：**
+1. 接口名称：`XxxService` / `XxxDAO`（无修饰词）
+2. 实现类名称：`XxxServiceImpl` / `XxxDAOImpl`（必须带 `Impl` 后缀）
+3. 不允许的实现类命名：`XxxServiceManager` / `XxxServiceDao` / `DefaultXxxService`
+4. 接口中方法不加 `public` 修饰符（接口默认就是 public）
+5. 实现类必须使用 `@Override` 注解标注所有覆写方法
+
+**为什么必须这样：**
+- 接口定义契约，便于依赖倒置和解耦
+- 实现类统一命名便于框架扫描和 AOP 代理
+- 符合 SOA 架构理念，便于后续扩展和替换
+
 ### 错误码规范
 
 - 格式：`[来源][4 位数字]`，如 `A0001`
@@ -159,3 +211,10 @@ if (x.compareTo(y) == 0) { ... }
 6. 读取 `07-Spring Boot 开发规范.md` 提供 Spring Boot 项目配置建议
 7. 读取 `09-Spring Cloud 微服务规范.md` 提供微服务拆分和通信建议
 8. 读取 `10-MyBatis 开发规范.md` 提供持久层配置建议
+
+当用户创建 Service/DAO 层代码时：
+1. **必须同时创建接口和实现类**（接口名为 `XxxService`，实现类名为 `XxxServiceImpl`）
+2. 接口中定义业务方法签名（不加 `public` 修饰符）
+3. 实现类使用 `@Service` 注解，并用 `@Override` 标注所有覆写方法
+4. 读取 `01-编程规约.md` 确认命名规范（第 16-17 条：接口和实现类命名规则）
+5. 读取 `07-Spring Boot 开发规范.md` 确认 Service 层最佳实践
