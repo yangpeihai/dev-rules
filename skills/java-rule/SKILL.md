@@ -49,7 +49,7 @@ description: 阿里巴巴 Java 开发规约专家。Cover programming standards,
 | 包名 | 小写 + 单数 | com.alibaba.util | com.alibaba.Utils |
 | 异常类 | Exception 结尾 | BusinessException | Error |
 | 测试类 | Test 结尾 | UserServiceTest | TestUserService |
-| 枚举类 | Enum 后缀 + 全大写 | ProcessStatusEnum.SUCCESS | Status.success |
+| **枚举类** | **Enum 后缀 + 成员全大写下划线** | **ProcessStatusEnum.SUCCESS** | **Status.success** |
 | **接口/实现类** | **接口无后缀，实现类 Impl 后缀** | **CacheService + CacheServiceImpl** | **CacheService + CacheServiceImp / CacheServiceDao** |
 
 ### 常见 NPE 场景
@@ -129,42 +129,7 @@ if (x.compareTo(y) == 0) { ... }
 
 ### 接口与实现类创建规则（重要）
 
-**【强制】**创建 Service/DAO 层代码时，必须同时创建接口和实现类：
-
-```java
-// 第一步：创建接口（定义契约）
-public interface UserService {
-    User getById(Long id);
-    List<User> listAll();
-    User create(UserCreateDTO dto);
-    void delete(Long id);
-}
-
-// 第二步：创建实现类（必须以 Impl 后缀命名）
-@Service
-public class UserServiceImpl implements UserService {
-
-    @Override
-    public User getById(Long id) {
-        // 实现逻辑
-    }
-
-    @Override
-    public List<User> listAll() {
-        // 实现逻辑
-    }
-
-    @Override
-    public User create(UserCreateDTO dto) {
-        // 实现逻辑
-    }
-
-    @Override
-    public void delete(Long id) {
-        // 实现逻辑
-    }
-}
-```
+**【强制】**创建 Service/DAO 层代码时，必须同时创建接口和实现类。
 
 **核心规则：**
 1. 接口名称：`XxxService` / `XxxDAO`（无修饰词）
@@ -178,12 +143,54 @@ public class UserServiceImpl implements UserService {
 - 实现类统一命名便于框架扫描和 AOP 代理
 - 符合 SOA 架构理念，便于后续扩展和替换
 
+### 枚举类命名规范（重要）
+
+**【强制】** 枚举类名必须带 Enum 后缀，枚举成员名称必须全大写，单词间用下划线隔开。
+
+**核心规则：**
+1. 枚举类名：`XxxEnum`（必须带 `Enum` 后缀）
+2. 枚举成员：全大写 + 下划线分隔（如 `SUCCESS` / `UNKNOWN_REASON`）
+3. 枚举属性字段：必须是 `private final`（不可变）
+4. 所有枚举类型字段必须有 Javadoc 注释
+
 ### 错误码规范
 
 - 格式：`[来源][4 位数字]`，如 `A0001`
 - A=用户端错误，B=系统执行出错，C=调用第三方服务出错
 - 全部正常返回 `00000`
 - 错误码不直接输出给用户
+
+### 工具库规范（重要）
+
+#### Lombok 注解使用
+
+**【推荐】** 优先使用 Lombok 注解简化 POJO 类、枚举类代码。
+
+**常用注解：**
+- `@Data`：生成 getter/setter/toString/equals/hashCode
+- `@Builder`：生成建造者模式代码
+- `@NoArgsConstructor` / `@AllArgsConstructor`：生成构造方法
+- `@Slf4j`：自动生成日志对象
+
+#### MapStruct 对象映射
+
+**【强制】** POJO 互转使用 MapStruct，禁止手动编写映射代码或使用 BeanUtils。
+
+**命名规则：**
+- 转换类命名：`XxxConverter`（必须以 `Converter` 后缀，如 `UserConverter`、`OrderConverter`）
+- 禁止命名：`XxxMapper`（与 MyBatis Mapper 命名冲突，如 `UserMapper`、`OrderMapper`）
+- 转换方法命名：`toXxx()`（目标对象）/ `fromXxx()`（来源对象）/ `toXxxList()`（批量转换）
+
+#### Swagger 接口文档
+
+**【强制】** Controller 层使用 Swagger 注解描述接口，必须符合 OpenAPI 3.x 规范。
+
+**规范要求：**
+1. 禁止使用旧版 Swagger 2.x 注解（`io.swagger.annotations`）
+2. 所有 Controller 类必须添加 `@Tag` 注解
+3. 所有公开接口方法必须添加 `@Operation` 注解
+4. 请求/响应实体必须添加 `@Schema` 注解描述字段含义
+5. 认证接口必须使用 `@SecurityRequirement(name = "bearerAuth")` 标注
 
 ---
 
