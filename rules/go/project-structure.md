@@ -1,6 +1,8 @@
 # Go 后端项目结构 (Standard Go Project Layout)
 
-```
+## 通用 Go 项目布局
+
+```text
 project/
 ├── cmd/                 # 应用入口点，主要存放 main.go
 ├── internal/            # 私有应用和库代码
@@ -22,3 +24,9 @@ project/
 ├── .gitignore
 └── README.md
 ```
+
+## 框架补充说明
+
+- Gin Web 项目：目录分层、响应规范、中间件顺序等以 `gin-web-rule` 为准
+- go-zero 项目：服务结构、分层职责、生成代码约束等以 `go-zero-rule` 为准
+- 本文件只保留通用 Go 项目布局，避免与 skill 内容重复

@@ -27,6 +27,7 @@
 | Python 代码检查 | `code-checker-python` |
 | Python 代码修复 | `code-fixer-python` |
 | Go 后端 | `go-rule` + `go-zero-rule` |
+| Gin Web 后端 | `go-rule` + `gin-web-rule` |
 | Go 代码检查 | `code-checker-go` |
 | Go 代码修复 | `code-fixer-go` |
 | Java 后端 | `java-rule` |
@@ -90,9 +91,10 @@
 - **特定语言规则** (根据当前项目语言动态加载):
   - **Python**: [编码规范](rules/python/coding-standards.md) | [项目结构](rules/python/project-structure.md)
   - **Go**: [编码规范](rules/go/coding-standards.md) | [项目结构](rules/go/project-structure.md)
+    - Gin Web 项目额外遵循 `gin-web-rule`
   - **Java**: [编码规范](rules/java/coding-standards.md) | [项目结构](rules/java/project-structure.md)
   - **前端**: [编码规范](rules/frontend/coding-standards.md) | [项目结构](rules/frontend/project-structure.md)
 
 ---
 
-*最后更新：2026-03-29*
+*最后更新：2026-03-30*

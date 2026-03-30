@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gin Web Rule"
+  short_description: "Gin Web 项目规范与团队工程约束"
+  default_prompt: "Use this skill to create, review, or refactor Gin Web projects with unified layering, API contracts, middleware, GORM access, config, logging, JWT auth, and tests."
