@@ -176,10 +176,11 @@ if (x.compareTo(y) == 0) { ... }
 
 **【强制】** POJO 互转使用 MapStruct，禁止手动编写映射代码或使用 BeanUtils。
 
-**命名规则：**
+**使用规范：**
 - 转换类命名：`XxxConverter`（必须以 `Converter` 后缀，如 `UserConverter`、`OrderConverter`）
 - 禁止命名：`XxxMapper`（与 MyBatis Mapper 命名冲突，如 `UserMapper`、`OrderMapper`）
 - 转换方法命名：`toXxx()`（目标对象）/ `fromXxx()`（来源对象）/ `toXxxList()`（批量转换）
+- 使用方式：使用 Mappers.getMapper 获取实例
 
 #### Swagger 接口文档
 
