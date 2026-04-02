@@ -31,7 +31,7 @@ type CreateUserRequest struct {
 
 ## 推荐实践
 
-- 将复杂校验拆成“基础格式校验 + 业务约束校验”，前者在 handler，后者在 service。
+- 将复杂校验拆成“基础格式校验 + 业务约束校验”，前者在 handler，后者在 logic。
 - 为常用校验规则建立公共 DTO 或自定义 tag，避免复制粘贴。
 
 ## 禁止事项

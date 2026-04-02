@@ -10,8 +10,8 @@
 ## Handler 职责
 
 - 从 `*gin.Context` 中读取路径参数、查询参数、请求体和请求上下文。
-- 调用 `service` 执行业务用例。
-- 将 `service` 返回值转换为统一响应。
+- 调用 `logic` 执行业务用例。
+- 将 `logic` 返回值转换为统一响应。
 - 记录必要的审计字段，不拼装复杂业务流程。
 
 ## 推荐写法
@@ -24,7 +24,7 @@ func (h *UserHandler) Create(c *gin.Context) {
         return
     }
 
-    user, err := h.userService.Create(c.Request.Context(), req)
+    user, err := h.userLogic.Create(c.Request.Context(), req)
     if err != nil {
         response.FromError(c, err)
         return
@@ -36,7 +36,7 @@ func (h *UserHandler) Create(c *gin.Context) {
 
 ## 强制规则
 
-- Handler 只允许出现“绑定参数 -> 调用 service -> 输出响应”的主线。
+- Handler 只允许出现“绑定参数 -> 调用 logic -> 输出响应”的主线。
 - 统一从 `c.Request.Context()` 派生标准上下文传入下层。
 - 对幂等接口显式约定幂等键或重复提交策略，不将该逻辑散落在多个 handler。
 - 文件上传、下载、流式响应要单独抽象，避免污染通用 CRUD handler。

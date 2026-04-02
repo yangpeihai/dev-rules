@@ -24,7 +24,7 @@ var ErrEmailExists = bizerr.New(40901, "email already exists")
 
 ## 强制规则
 
-- Service 返回业务错误，Handler 或统一响应层负责映射 HTTP 状态与返回体。
+- Logic 返回业务错误，Handler 或统一响应层负责映射 HTTP 状态与返回体。
 - 未知错误统一降级为内部错误并记录结构化日志。
 - 包装错误时保留原始错误链，便于 `errors.Is`、`errors.As` 判断。
 

@@ -2,6 +2,8 @@
 
 ## 推荐目录
 
+默认使用 `logic/` 作为业务编排层目录命名，与 go-zero 项目结构保持一致；如团队历史项目仍使用 `service/`，迁移时应保持职责一致而不是混用两套语义。
+
 ```text
 cmd/server/main.go
 configs/
@@ -9,7 +11,7 @@ internal/bootstrap/
 internal/config/
 internal/router/
 internal/handler/
-internal/service/
+internal/logic/
 internal/repository/
 internal/model/
 internal/middleware/
@@ -25,8 +27,8 @@ pkg/
 | `cmd/` | 程序入口、启动 HTTP 服务 | `bootstrap` |
 | `bootstrap/` | 初始化配置、日志、数据库、路由 | `config`、`router`、基础设施组件 |
 | `router/` | 路由分组与中间件挂载 | `handler`、`middleware` |
-| `handler/` | 解析请求、调用 service、输出响应 | `service`、`response` |
-| `service/` | 业务用例编排 | `repository`、领域对象、外部客户端 |
+| `handler/` | 解析请求、调用 logic、输出响应 | `logic`、`response` |
+| `logic/` | 业务用例编排 | `repository`、领域对象、外部客户端 |
 | `repository/` | 数据库访问 | `model`、`gorm` |
 | `model/` | 持久化实体与表映射 | 无业务逻辑 |
 | `middleware/` | recovery、request id、鉴权、访问日志等横切逻辑 | `response`、基础设施组件 |
@@ -35,7 +37,7 @@ pkg/
 
 - `main.go` 只负责启动，不堆积初始化细节。
 - `handler` 不直接依赖 `*gorm.DB`、配置解析器、JWT 库底层实现。
-- `service` 不接收 `*gin.Context`，统一接收 `context.Context`。
+- `logic` 不接收 `*gin.Context`，统一接收 `context.Context`。
 - `repository` 不返回 HTTP 语义错误，只返回数据层错误或领域错误。
 - 公共响应封装、错误码、日志字段常量应集中管理，避免散落在各层。
 
