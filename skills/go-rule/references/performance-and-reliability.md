@@ -1,5 +1,11 @@
 # Go 性能与可靠性规范
 
+## AI 使用提示
+
+- 当任务涉及超时、并发、资源释放、优雅关闭、测试覆盖或性能优化时，先看本文件。
+- 默认先保证正确性、超时控制和可观测性，再考虑微优化。
+- 没有 profiling、基准或明确瓶颈时，不主动引入复杂性能技巧。
+
 > AI Code 遵循规约，编写高性能可靠的代码。
 
 ## 1. 内存管理
@@ -11,7 +17,7 @@ result := make([]string, 0, len(items))
 // 预分配 map
 m := make(map[string]int, 100)
 
-// 使用 sync.Pool 复用对象
+// 在热点路径且经过 profiling 证明有效时再使用 sync.Pool
 var bufferPool = sync.Pool{
     New: func() interface{} { return new(bytes.Buffer) },
 }
@@ -157,10 +163,10 @@ server.Shutdown(context.Background())
 
 ## 9. 测试
 
-### 覆盖率要求
+### 覆盖重点
 
 ```bash
-# 单元测试覆盖率必须达到 85%
+# 覆盖关键业务路径、错误分支和回归风险点
 go test -cover ./...
 
 # 生成覆盖率报告
@@ -200,19 +206,12 @@ func TestWithResource(t *testing.T) {
     t.Cleanup(func() { releaseTestResource(resource) })
 }
 
-// 使用 t.Setup 进行初始化
-func TestWithSetup(t *testing.T) {
-    var db *sql.DB
-
-    t.Run("setup", func(t *testing.T) {
-        var err error
-        db, err = sql.Open("postgres", os.Getenv("TEST_DB_URL"))
-        if err != nil {
-            t.Fatal(err)
-        }
-    })
+// 使用辅助函数或 t.Cleanup 管理初始化与清理
+func TestWithDB(t *testing.T) {
+    db := setupTestDB(t)
 
     t.Run("test case 1", func(t *testing.T) {
+        _ = db
         // 使用 db
     })
 }
@@ -277,10 +276,10 @@ func TestHandler_CreateUser(t *testing.T) {
 }
 ```
 
-### 接口 Mock（gomock）
+### 接口替身（fake/stub/mock）
 
 ```go
-//go:generate go run go.uber.org/mock/mockgen -source=service.go -destination=mock_service.go
+// 小接口优先手写 fake；需要严格校验交互时再使用 mock 框架
 
 type MockUserRepository struct {
     ctrl *gomock.Controller
@@ -406,10 +405,10 @@ go test ./...
 go test -cover ./...
 
 # 运行指定包的测试
-go test ./internal/service/...
+go test ./internal/...
 
 # 运行特定测试
-go test -run TestUserService_CreateUser ./internal/service/...
+go test -run TestUserService_CreateUser ./internal/...
 
 # 并发安全检查
 go test -race ./...
@@ -425,7 +424,7 @@ go tool cover -func=coverage.out | grep -v "100.0%"
 ## 10. 性能清单
 
 - [ ] 预分配切片/map 容量
-- [ ] 使用 sync.Pool 复用对象
+- [ ] 热点路径优化前已通过 profiling 确认瓶颈
 - [ ] 使用 buffer 进行 I/O
 - [ ] 批量处理数据库操作
 - [ ] 限制并发 goroutine 数量
@@ -434,7 +433,7 @@ go tool cover -func=coverage.out | grep -v "100.0%"
 - [ ] 添加关键路径指标
 - [ ] 实现优雅关闭
 - [ ] 使用 pprof 进行性能分析
-- [ ] 单元测试覆盖率达到 85%
+- [ ] 关键路径、错误分支和回归风险点已覆盖
 - [ ] 并发代码通过 race detector 检查
 - [ ] HTTP handler 使用 httptest 测试
-- [ ] 接口依赖使用 gomock mock
+- [ ] 接口依赖已通过 fake/stub/mock 等合适方式隔离

@@ -1,5 +1,11 @@
 # Go 代码风格与可读性规范
 
+## AI 使用提示
+
+- 当任务涉及命名、注释、函数签名、导入组织、测试命名或代码可读性时，先看本文件。
+- 默认优先减少噪音和嵌套，不为了“聪明”牺牲可读性。
+- 如果一段 Go 代码看起来像需要解释而不是能直接读懂，优先考虑简化写法。
+
 > AI Code 遵循规约，确保代码可读性和风格统一。
 
 ## 1. 命名规范
@@ -48,7 +54,7 @@ goimports -w .
 // Package crypto 提供加密和解密功能。
 package crypto
 
-// 导出标识符必须注释：描述功能，参数说明
+// 对外暴露的公共 API、跨包复用组件、复杂约束的导出标识符应注释
 // NewClient 创建并返回一个新的 HTTP 客户端。
 // timeout 指定请求超时时间，0 表示使用默认超时。
 func NewClient(timeout time.Duration) *Client { ... }
@@ -88,7 +94,7 @@ default:
 ## 5. 函数设计
 
 ```go
-// 参数不超过 4 个，过多使用结构体或选项模式
+// 当参数列表影响可读性时，使用结构体或选项模式
 func ProcessUser(ctx context.Context, userID string, opts Options) (*User, error)
 
 // 返回值：结果 + 错误
@@ -107,11 +113,16 @@ if err != nil {
     return fmt.Errorf("操作失败: %w", err)
 }
 
-// 错误包装：使用 %w 保留原始错误
+// 错误包装：在新增上下文时使用 %w 保留原始错误
 return fmt.Errorf("连接数据库失败: %w", err)
 
 // 错误判断
 if errors.Is(err, ErrNotFound) { ... }
+
+// 仅透传时可以直接返回，避免无意义包装
+if err != nil {
+    return err
+}
 ```
 
 ## 7. 结构体组织
@@ -187,11 +198,11 @@ func process(data []byte) error {
 
 - ❌ 不使用 `gofmt` 格式化
 - ❌ 使用无意义的变量名（u, data, flag1）
-- ❌ 导出标识符不写注释
+- ❌ 公共 API 或复杂导出标识符缺少必要注释
 - ❌ 忽略错误检查
 - ❌ 使用位置依赖初始化结构体
 - ❌ 过度嵌套（超过 3 层）
-- ❌ 单个文件超过 500 行
+- ❌ 文件职责混乱、过大且难以维护（不要只以行数机械判断）
 
 ## 12. 测试可读性
 

@@ -1,5 +1,11 @@
 # Go 安全编码规范
 
+## AI 使用提示
+
+- 当任务涉及输入校验、密码、密钥、路径、TLS、日志脱敏或测试凭证时，先看本文件。
+- 如果代码把外部输入直接拼接进 SQL、路径、命令或日志，默认视为高优先级风险。
+- 当安全与便捷冲突时，默认优先安全，再说明权衡。
+
 > AI Code 遵循规约，编写安全可靠的代码。
 
 ## 1. 输入验证
@@ -30,12 +36,20 @@ db.QueryRow("SELECT * FROM users WHERE id = $1", id)
 ## 3. 路径遍历防护
 
 ```go
-import "path/filepath"
+import (
+    "path/filepath"
+    "strings"
+)
 
 func ReadFile(baseDir, filename string) ([]byte, error) {
+    baseDir = filepath.Clean(baseDir)
     cleanPath := filepath.Clean(filepath.Join(baseDir, filename))
-    // 确保路径在 baseDir 内
-    if !strings.HasPrefix(cleanPath, baseDir) {
+
+    rel, err := filepath.Rel(baseDir, cleanPath)
+    if err != nil {
+        return nil, err
+    }
+    if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
         return nil, errors.New("非法的文件路径")
     }
     return os.ReadFile(cleanPath)
@@ -47,7 +61,7 @@ func ReadFile(baseDir, filename string) ([]byte, error) {
 ```go
 import "golang.org/x/crypto/bcrypt"
 
-// 必须使用 bcrypt
+// 默认使用 bcrypt；如项目已有安全基线，也可使用 argon2id 等成熟方案
 func HashPassword(password string) (string, error) {
     hashedPassword, err := bcrypt.GenerateFromPassword(
         []byte(password),
@@ -98,7 +112,7 @@ import "crypto/rand"
 }
 ```
 
-## 8. HTTP 安全头
+## 8. 服务端 HTTP 安全头（仅 Web/HTTP 场景）
 
 ```go
 // 设置安全响应头
@@ -162,11 +176,11 @@ req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
 - [ ] 所有外部输入都经过验证
 - [ ] 使用参数化查询
 - [ ] 路径验证防止遍历攻击
-- [ ] 密码使用 bcrypt 哈希
+- [ ] 密码使用成熟的 KDF/哈希方案（默认 `bcrypt`，允许项目约定的 `argon2id` 等）
 - [ ] 敏感数据脱敏后再记录日志
 - [ ] 密钥从环境变量读取
 - [ ] 使用 HTTPS 和 TLS
-- [ ] 设置 HTTP 安全头
+- [ ] Web/HTTP 服务已按需设置安全头
 - [ ] 并发访问使用 mutex
 - [ ] 外部调用设置超时
 - [ ] 定期更新依赖
@@ -360,11 +374,11 @@ go test -cover ./...
 - [ ] 所有外部输入都经过验证
 - [ ] 使用参数化查询
 - [ ] 路径验证防止遍历攻击
-- [ ] 密码使用 bcrypt 哈希
+- [ ] 密码使用成熟的 KDF/哈希方案（默认 `bcrypt`，允许项目约定的 `argon2id` 等）
 - [ ] 敏感数据脱敏后再记录日志
 - [ ] 密钥从环境变量读取
 - [ ] 使用 HTTPS 和 TLS
-- [ ] 设置 HTTP 安全头
+- [ ] Web/HTTP 服务已按需设置安全头
 - [ ] 并发访问使用 mutex
 - [ ] 外部调用设置超时
 - [ ] 定期更新依赖

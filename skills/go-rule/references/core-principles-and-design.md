@@ -1,5 +1,11 @@
 # Go 核心原则与设计规范
 
+## AI 使用提示
+
+- 当任务涉及接口设计、包边界、context 传递、错误链或依赖注入时，先看本文件。
+- 如果不确定某段逻辑该如何分层、抽象或暴露接口，默认以“更小、更显式、更易测”为准。
+- 如果某个设计需要长解释才能说清，通常说明抽象可能过重。
+
 > AI Code 遵循规约，编写地道的 Go 代码。
 
 ## 1. 设计哲学
@@ -61,13 +67,16 @@ func ProcessData(r io.Reader) (*Result, error) { ... }
 func (s *Service) Process(id string) error {
     item, err := s.repo.Find(id)
     if err != nil {
-        return err  // 直接返回
+        return err  // 无新增上下文时直接返回
     }
     return s.processor.Process(item)
 }
 
-// 需要上下文时包装
+// 需要新增上下文时包装
 return fmt.Errorf("查找项目 %s: %w", id, err)
+
+// 使用标准库判断错误链
+if errors.Is(err, ErrNotFound) { ... }
 
 // 避免过度使用 panic（仅用于真正的不可恢复情况）
 if s.config.DBURL == "" {
@@ -78,10 +87,16 @@ if s.config.DBURL == "" {
 ## 4. 并发原则
 
 ```go
-// 通过通信共享内存
+// 用 channel 处理任务编排与所有权转移
 type Worker struct {
     jobs    <-chan Job
     results chan<- Result
+}
+
+// 共享状态优先显式同步
+type Counter struct {
+    mu    sync.Mutex
+    value int
 }
 
 // 不要共享正在通信的 channel

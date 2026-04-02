@@ -4,12 +4,18 @@
 
 1. **Handler 保持精简** — handler 只做请求解码、调用 logic、编码响应，不堆业务代码
 2. **每个用例一个 logic 文件** — `CreateOrderLogic`、`GetOrderLogic`、`CancelOrderLogic` 各自独立
-3. **ServiceContext 是唯一的构造入口** — 不要在 `svc.NewServiceContext` 之外调用 `sql.Open` 或 `redis.NewClient`
+3. **ServiceContext 是默认依赖入口** — 共享依赖优先集中在 `svc.NewServiceContext` 初始化，避免在业务代码中四处分散创建
 4. **配置优于硬编码** — 超时时间、功能开关、下游地址等所有可调参数都放入 `etc/*.yaml`
-5. **Model 层自动生成，Logic 层归你所有** — 可以随时重新生成 model；logic 层是你的业务代码所在地，goctl 永远不会覆盖它
-6. **使用 goctl 生成代码** — 使用 `goctl api`、`goctl rpc` 和 `goctl model` 生成标准化的代码结构
+5. **Model 层通常由 goctl 生成，Logic 层归你所有** — 生成代码与手写扩展分开管理，便于后续再生成或升级
+6. **优先使用 goctl 生成代码骨架** — 使用 `goctl api`、`goctl rpc` 和 `goctl model` 快速建立标准结构，历史项目可渐进接入
 7. **保持服务韧性** — 利用 go-zero 内置的熔断、限流、降载能力
 8. **可观测性第一** — 从第一天起就配置好日志、指标和链路追踪
+
+## 默认规则
+
+- 目录结构优先遵循 go-zero 常见布局，再按项目规模做小幅调整。
+- 业务逻辑集中在 Logic 层，生成代码与手写扩展分层管理。
+- 共享依赖集中在 `ServiceContext`，避免四处分散初始化。
 
 ## 常用命令速查
 
@@ -78,6 +84,25 @@ goctl template init --category api
 goctl template init --category rpc
 goctl template init --category model
 ```
+
+## 推荐实践
+
+- 先用脚手架建立骨架，再把精力放在错误处理、事务、测试和领域边界上。
+- 对历史项目优先渐进整理目录与依赖，不为“完全标准化”一次性大改稳定模块。
+- 在团队内固定 `goctl` 使用方式、模板来源、目录命名和错误码策略。
+
+## 禁止事项
+
+- ❌ 把“用了 goctl”当成代码质量的替代品
+- ❌ 在生成代码上直接堆积大量业务改动
+- ❌ 忽视历史项目的兼容成本，强行一次性重构所有目录
+
+## 审查清单
+
+- [ ] 分层、目录和依赖组织符合团队约定
+- [ ] 生成代码与手写扩展边界清晰
+- [ ] 历史项目演进方案是渐进的
+- [ ] 可观测性与韧性配置没有被忽略
 
 ## 参考资料
 

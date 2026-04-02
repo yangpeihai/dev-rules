@@ -1,6 +1,12 @@
 # goctl 工具使用
 
-## 安装 goctl
+## 核心原则
+
+- `goctl` 是 go-zero 的默认脚手架工具，适合快速建立标准骨架。
+- 生成代码是起点，不是最终架构边界；项目可以在保持职责清晰的前提下渐进演化。
+- 手写扩展应尽量避开直接改生成代码，降低再生成和升级成本。
+
+## 安装 goctl（需要使用脚手架或代码生成时）
 
 ```bash
 # 安装 goctl
@@ -9,6 +15,13 @@ go install github.com/zeromicro/go-zero/tools/goctl@latest
 # 验证安装
 goctl --version
 ```
+
+## 默认使用场景
+
+- 新建 API / RPC / Model 骨架
+- 校验和格式化 `.api` 文件
+- 生成 Docker / K8s 模板等辅助文件
+- 定制模板或批量生成重复结构
 
 ## goctl API 命令
 
@@ -117,14 +130,14 @@ goctl model mongo \
 
 ## goctl 其他命令
 
-### Docker 生成
+### Docker 生成（按需）
 
 ```bash
 # 生成 Dockerfile
 goctl docker -go user-api.go
 ```
 
-### Kubernetes 生成
+### Kubernetes 生成（按需）
 
 ```bash
 # 生成 K8s 部署文件
@@ -136,7 +149,7 @@ goctl kube deploy \
     --port 8888
 ```
 
-### 模板管理
+### 模板管理（按需）
 
 ```bash
 # 初始化模板到本地
@@ -154,3 +167,21 @@ goctl template init --category model
 # 从 .api 文件生成 Swagger 文档
 goctl api swagger -api user.api -o ./doc/swagger.json
 ```
+
+## 推荐实践
+
+- 生成代码后尽快把手写逻辑放入独立文件或明确扩展点。
+- 在团队内统一 `-style`、目录布局和模板来源，减少项目间风格漂移。
+- 对历史项目优先渐进接入 `goctl`，不要为“纯脚手架化”大规模重构稳定模块。
+
+## 禁止事项
+
+- ❌ 把 `goctl` 当成质量保证本身，忽略分层、错误处理和测试
+- ❌ 频繁直接改动生成代码核心段落，导致后续难以再生成
+- ❌ 因为工具限制强行扭曲业务目录结构
+
+## 审查清单
+
+- [ ] 生成代码与手写扩展边界清晰
+- [ ] 团队内脚手架风格和目录风格一致
+- [ ] 历史项目接入方式是渐进的，不是破坏式重构
