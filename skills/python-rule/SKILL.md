@@ -76,16 +76,6 @@ except NetworkError as exc:
     raise ServiceUnavailableError("外部服务暂不可用") from exc
 ```
 
----
-
-## 文档索引
-
-- 主 skill：用于快速判断任务类型、执行优先级、最小工作流和输出方式。
-- `core-principles-and-design.md`：用于模块边界、类设计、依赖组织、异常模型、配置方案。
-- `style-and-readability.md`：用于命名、格式化、类型注解、函数签名、导入和测试可读性。
-- `performance-and-reliability.md`：用于并发选型、I/O、资源管理、可靠性和测试重点。
-- `security.md`：用于输入校验、SQL、路径、密码、密钥、序列化和日志脱敏。
-
 ## 详细规范索引
 
 本规范按主题拆分为多个文档，根据你的具体需求参考相应章节：
@@ -114,18 +104,6 @@ except NetworkError as exc:
 - 需要做设计取舍时，优先看 `core-principles-and-design.md`。
 - 需要查编码细节、命名和函数写法时，优先看 `style-and-readability.md`。
 - 需要判断可靠性或安全风险时，结合 `performance-and-reliability.md` 和 `security.md` 一起看。
-
-## AI 执行入口
-
-- 遇到 Python 实现任务：先判断是设计、风格、可靠性还是安全问题，再只读最相关的 1-2 份 reference。
-- 遇到 Python 审查任务：先从异常处理、资源释放、安全缺口和测试风险切入，再补充一致性问题。
-- 遇到 Python 文档任务：优先写成可执行、少歧义、适合多轮会话重复使用的规则。
-- 如果项目已有明确框架或团队约定：优先保持项目一致性，不强行套通用理想写法。
-
-## 当前推荐的下一步
-
-- 如果要继续完善 `python-rule`，下一步适合补充更明确的框架例外说明，例如 FastAPI、Django、脚本型项目的差异化入口。
-- 如果要继续做 AI 工具化，下一步适合为关键 reference 补充更短的“实现/审查/文档”局部最小工作流。
 
 ## AI 默认输出要求
 

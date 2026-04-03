@@ -1,713 +1,230 @@
 # Python 代码风格与可读性规范
 
-> AI Code 遵循规约，确保代码可读性和风格统一。
+## AI 使用提示
 
----
+- 当任务涉及命名、格式化、类型注解、函数签名、导入组织、异常写法或测试可读性时，先看本文件。
+- 默认优先减少噪音和嵌套，不为了“聪明写法”牺牲可读性。
+- 如果一段代码需要额外解释才能看懂，优先考虑简化写法而不是补注释。
 
-## 🤖 AI 使用提示
-
-**何时优先查阅**：当你需要处理命名、格式化、文档字符串、类型注解、函数签名、导入组织、异常写法和测试可读性时。
-
-**阅读顺序建议**：
-1. 先判断当前问题是“命名/格式”“函数设计”“异常写法”还是“测试可读性”。
-2. 只看当前问题相关章节，不要为了一个小改动整篇通读。
-3. 如果项目已有稳定风格，优先保持一致；只有明显降低可读性时才建议调整。
-
-**默认决策倾向**：
-- 公共 API：优先提供清晰类型信息，但不机械补全所有动态边界
-- 函数参数：当参数过多或可读性变差时，优先关键字参数、配置对象或数据类
-- 异常处理：只捕获能处理的异常，保留必要上下文
-- 测试：优先清晰命名、AAA 结构和易读断言
-
----
+> AI Code 遵循规约，确保 Python 代码可读、统一、易维护。
 
 ## 1. 命名规范
 
 ```python
-# 包名：全小写，简短，单单词（允许下划线）
-# 包目录
-package_name/
-    __init__.py
-    module_name.py
-
-# 模块名：全小写，单词间用下划线
+# 模块名：小写加下划线
 # user_service.py
-# auth_manager.py
 
-# 类名：大驼峰（PascalCase）
+
+# 类名：PascalCase
 class UserService:
     pass
 
-class HTTPClient:
-    pass
 
-# 函数和变量：小写 + 下划线（snake_case）
-def calculate_total_price():
-    pass
+# 函数和变量：snake_case
+def calculate_total_price() -> int:
+    return 0
+
 
 user_count = 0
 is_active = True
 
-# 常量：全大写 + 下划线
+
+# 常量：UPPER_SNAKE_CASE
 MAX_RETRIES = 3
 DEFAULT_TIMEOUT = 30
 
-# 私有变量：单下划线前缀
+
+# 非公开属性：单下划线
 class Cache:
-    def __init__(self):
-        self._cache = {}
-        self._hit_count = 0
-
-# 名称修饰（子类不覆盖）：双下划线前缀
-class Parent:
-    def __init__(self):
-        self.__internal = None  # 被修饰为 _Parent__internal
-
-# 特殊方法：双下划线前后
-__init__
-__str__
-__len__
+    def __init__(self) -> None:
+        self._items: dict[str, object] = {}
 ```
 
 ## 2. 格式化
 
 ```bash
-# 使用 black 格式化（行宽 100）
-black --line-length 100 .
-
-# 使用 ruff 检查
+black .
 ruff check . --fix
-
-# .editorconfig 配置
-[*.py]
-indent_style = space
-indent_size = 4
-end_of_line = lf
-trim_trailing_whitespace = true
-insert_final_newline = true
-max_line_length = 100
 ```
 
-## 3. 文档字符串
+- 项目已有统一工具链时，优先服从项目配置。
+- 没有明确约定时，默认保持 4 空格缩进、单一风格、最小必要换行。
+
+## 3. 类型注解
 
 ```python
-# 模块文档字符串（文件顶部）
-"""用户服务模块。
-
-提供用户注册、登录、信息管理等功能。
-"""
-
-# 类文档字符串
-class UserService:
-    """用户服务类。
-
-    负责处理用户相关的业务逻辑，包括注册、认证和信息管理。
-
-    Attributes:
-        db: 数据库连接对象
-        cache: 缓存对象
-    """
-
-    def __init__(self, db, cache):
-        """初始化用户服务。
-
-        Args:
-            db: 数据库连接
-            cache: 缓存对象
-        """
-        self.db = db
-        self.cache = cache
-
-# 函数文档字符串
-def create_user(username: str, email: str, password: str) -> User:
-    """创建新用户。
-
-    验证用户信息并创建新用户账户。
-
-    Args:
-        username: 用户名，3-32 个字符
-        email: 邮箱地址
-        password: 密码，最少 8 个字符
-
-    Returns:
-        创建的用户对象
-
-    Raises:
-        ValidationError: 当输入数据验证失败时
-        DuplicateError: 当用户名或邮箱已存在时
-
-    Example:
-        >>> user = create_user("john", "john@example.com", "secure123")
-        >>> print(user.id)
-    """
-    pass
-
-# 单行文档字符串
-def add(a: int, b: int) -> int:
-    """返回两数之和。"""
-    return a + b
-```
-
-## 4. 类型注解
-
-```python
-# 基本类型注解
 def greet(name: str) -> str:
-    return f"Hello, {name}"
+    return f"hello, {name}"
 
-# 容器类型
-from typing import list, dict, set, tuple
 
-def process_items(items: list[str]) -> dict[str, int]:
-    pass
+def build_user_map(users: list[User]) -> dict[str, User]:
+    return {user.id: user for user in users}
 
-# Optional（可以为 None）
-from typing import Optional
 
-def find_user(user_id: int) -> Optional[User]:
-    """查找用户，不存在时返回 None。"""
-    pass
-
-# Union（多种类型）
-from typing import Union
-
-def parse(value: Union[str, int, float]) -> int:
-    pass
-
-# 3.10+ 使用 | 操作符
-def parse(value: str | int | float) -> int:
-    pass
-
-# Callable（函数类型）
-from typing import Callable
-
-def run_callback(
-    callback: Callable[[str], bool],
-    data: str
-) -> bool:
-    pass
-
-# 泛型类型
-from typing import Generic, TypeVar
-
-T = TypeVar('T')
-
-class Stack(Generic[T]):
-    def push(self, item: T) -> None:
-        pass
-
-    def pop(self) -> T:
-        pass
-
-# 类属性类型注解
-class Config:
-    name: str
-    timeout: int = 30
-    debug: bool = False
+def find_user(user_id: str) -> User | None:
+    return None
 ```
 
-## 5. 控制结构
+- 公共 API、跨模块边界和复杂返回值优先补类型注解。
+- 动态元编程、框架魔法或历史代码边界，不做机械补全。
+- 类型注解的目标是减少歧义，不是追求表面覆盖率。
+
+## 4. 文档字符串
 
 ```python
-# if 语句：使用真值测试
-# ✅ 推荐
-if users:  # 列表非空为真
-    process(users)
+class UserService:
+    """处理用户注册、查询和状态变更。"""
 
-if name:  # 字符串非空为真
-    greet(name)
 
-# ❌ 避免
-if len(users) > 0:
-    process(users)
-
-if name != "":
-    greet(name)
-
-# for 循环：优先使用枚举和压缩
-names = ['Alice', 'Bob', 'Charlie']
-
-# ✅ 推荐：使用 enumerate
-for i, name in enumerate(names):
-    print(f"{i}: {name}")
-
-# ✅ 推荐：使用 zip
-ages = [25, 30, 35]
-for name, age in zip(names, ages):
-    print(f"{name}: {age}")
-
-# 列表推导式（简单场景）
-squares = [x**2 for x in range(10)]
-even_squares = [x**2 for x in range(10) if x % 2 == 0]
-
-# 生成器表达式（大数据集）
-sum_squares = sum(x**2 for x in range(1000000))
-
-# 字典推导式
-user_map = {user.id: user.name for user in users}
-
-# 三元表达式
-status = "active" if is_active else "inactive"
-
-# match-case（Python 3.10+）
-def handle_status(status: str) -> str:
-    match status:
-        case "active":
-            return "处理活跃状态"
-        case "pending" | "waiting":
-            return "处理等待状态"
-        case s if s.startswith("error_"):
-            return f"处理错误：{s}"
-        case _:
-            return "未知状态"
+def create_user(username: str, email: str) -> User:
+    """创建用户并返回新对象。"""
 ```
 
-## 6. 函数设计
+- 公共模块、公共类、公共函数在需要时补简洁 docstring。
+- 说明“做什么”和关键约束，不重复参数名翻译。
+- 私有小函数如果名字已经足够清晰，可以不写 docstring。
+
+## 5. 函数设计
 
 ```python
-# 参数顺序：位置参数 -> *args -> 关键字参数 -> **kwargs
-def create_request(
-    method: str,
-    url: str,
-    *args,
-    timeout: int = 30,
-    retries: int = 3,
-    **kwargs
-) -> Response:
-    pass
-
-# 只接收关键字参数（强制可读性）
 def create_user(
     *,
     username: str,
     email: str,
     password: str,
-    role: str = "user"
+    role: str = "user",
 ) -> User:
-    pass
+    ...
 
-# 调用时必须使用关键字
-create_user(
-    username="john",
-    email="john@example.com",
-    password="secure123"
-)
 
-# 可变参数：注意默认参数陷阱
-# ❌ 错误：可变默认参数
-def add_item(item, items=[]):  # 危险！列表在所有调用间共享
-    items.append(item)
-    return items
-
-# ✅ 正确：使用 None 作为默认值
-def add_item(item, items=None):
+def add_item(item: str, items: list[str] | None = None) -> list[str]:
     if items is None:
         items = []
     items.append(item)
     return items
-
-# 参数过多时使用数据类或配置对象
-# ❌ 参数过多
-def create_order(user_id, product_id, quantity, price, discount, tax, shipping_address, billing_address):
-    pass
-
-# ✅ 使用配置对象
-from dataclasses import dataclass
-
-@dataclass
-class OrderConfig:
-    quantity: int
-    discount: float = 0.0
-    tax: float = 0.1
-    shipping_address: str = ""
-    billing_address: str = ""
-
-def create_order(user_id: str, product_id: str, config: OrderConfig):
-    pass
 ```
 
-## 7. 类和对象
+- 参数多到影响阅读时，优先关键字参数、数据类或配置对象。
+- 函数优先单一职责；超过 50 行通常要怀疑是否可拆。
+- 避免可变默认参数。
+
+## 6. 控制结构
 
 ```python
-# 使用 dataclass（Python 3.7+）
+if users:
+    process(users)
+
+
+for index, name in enumerate(names):
+    print(index, name)
+
+
+for name, age in zip(names, ages):
+    print(name, age)
+
+
+result = "active" if is_active else "inactive"
+```
+
+- 简单场景用推导式；一旦嵌套或条件过多就改回普通循环。
+- 优先早返回，减少深层嵌套。
+- `match-case` 只在确实提升清晰度时使用。
+
+## 7. 异常写法
+
+```python
+try:
+    result = call_external_api()
+except NetworkError as exc:
+    raise ServiceUnavailableError("外部服务暂不可用") from exc
+
+
+try:
+    process()
+except (ValueError, TypeError) as exc:
+    logger.warning("处理失败: %s", exc)
+```
+
+- 只捕获能处理的异常。
+- 新增上下文时再包装或转换异常。
+- 禁止裸 `except` 和静默吞错。
+
+## 8. 类与对象
+
+```python
 from dataclasses import dataclass, field
 from datetime import datetime
 
+
 @dataclass
 class User:
-    """用户数据类。"""
     id: str
     name: str
     email: str
-    created_at: datetime = field(default_factory=datetime.now)
-    tags: list[str] = field(default_factory=list)
-
-    def to_dict(self) -> dict:
-        """转换为字典。"""
-        return {
-            'id': self.id,
-            'name': self.name,
-            'email': self.email,
-        }
-
-# 类继承结构
-class Base:
-    """基类。"""
-    pass
-
-class MixinA:
-    """混入类 A。"""
-    pass
-
-class MyClass(MixinA, Base):
-    """组合类。"""
-    pass
-
-# 属性装饰器
-class Product:
-    def __init__(self, price: float):
-        self._price = price
-
-    @property
-    def price(self) -> float:
-        """获取价格（只读）。"""
-        return self._price
-
-    @price.setter
-    def price(self, value: float):
-        """设置价格（带验证）。"""
-        if value < 0:
-            raise ValueError("价格不能为负数")
-        self._price = value
+    created_at: datetime = field(default_factory=datetime.utcnow)
 ```
 
-## 8. 导入组织
+- 纯数据容器优先 `dataclass`。
+- 属性访问逻辑复杂时再使用 `@property`。
+- 混入和继承只在确有收益时使用。
+
+## 9. 导入组织
 
 ```python
-# 导入顺序：标准库 -> 第三方库 -> 本地应用
-# 1. 标准库
 from __future__ import annotations
-import os
-import sys
-from typing import Optional
 
-# 2. 第三方库
-import requests
-from flask import Flask
-
-# 3. 本地应用/项目内模块
-from .utils import helper
-from ..models import User
-from myapp.services import UserService
-
-# 导入最佳实践
-# ✅ 推荐
 import os
 from pathlib import Path
 
-# ❌ 避免：通配符导入
-from module import *
+import requests
 
-# ❌ 避免：循环导入（使用类型注解字符串）
-# file_a.py
-def process(node: 'Node') -> None:  # 使用字符串避免循环导入
-    pass
-
-# 相对导入（包内）
-from . import sibling_module
-from .submodule import function
-from .. import parent_module
+from myapp.models import User
+from myapp.services import UserService
 ```
 
-## 9. 异常处理
+- 导入顺序：标准库 -> 第三方 -> 本地模块。
+- 避免通配符导入。
+- 循环依赖优先通过重构边界解决，而不是堆局部导入。
+
+## 10. 测试可读性
 
 ```python
-# 只捕获能处理的异常
-try:
-    result = api_call()
-except NetworkError:
-    return fallback_value()
+def test_create_user_valid_input_returns_success() -> None:
+    # Arrange
+    payload = {"username": "alice", "email": "alice@example.com"}
 
-# ❌ 避免：裸 except
-try:
-    process()
-except:  # 会捕获 SystemExit、KeyboardInterrupt
-    pass
+    # Act
+    user = create_user(**payload)
 
-# 捕获多个异常
-try:
-    process()
-except (IOError, ValueError) as e:
-    logger.error(f"处理失败：{e}")
-
-# 异常链（保留原始异常）
-def load_config(path: str) -> dict:
-    try:
-        with open(path) as f:
-            return json.load(f)
-    except (IOError, json.JSONDecodeError) as e:
-        raise ConfigError(f"加载配置失败") from e
-
-# else 子句（无异常时执行）
-try:
-    result = risky_operation()
-except ValueError:
-    handle_error()
-else:
-    # 只有在没有异常时执行
-    process_result(result)
-finally:
-    # 总是会执行（清理资源）
-    cleanup()
+    # Assert
+    assert user.email == "alice@example.com"
 ```
-
-## 10. 上下文管理器
-
-```python
-# 使用现有的上下文管理器
-with open('file.txt') as f:
-    data = f.read()
-
-# 多个上下文管理器
-with open('input.txt') as fin, open('output.txt', 'w') as fout:
-    fout.write(fin.read())
-
-# 使用 contextlib
-from contextlib import contextmanager
-
-@contextmanager
-def timer(name: str):
-    """计时上下文管理器。"""
-    import time
-    start = time.time()
-    try:
-        yield
-    finally:
-        elapsed = time.time() - start
-        print(f"{name}: {elapsed:.2f}s")
-
-# 使用
-with timer("processing"):
-    process_data()
-
-# 类实现的上下文管理器
-class ManagedResource:
-    def __enter__(self):
-        self.resource = acquire_resource()
-        return self.resource
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.resource.close()
-```
-
-## 11. 代码组织
-
-```python
-# 模块内组织顺序
-"""模块文档字符串。"""
-
-# 1. 导入
-from __future__ import annotations
-import os
-from typing import Optional
-
-# 2. 模块级常量
-MAX_SIZE = 100
-DEFAULT_TIMEOUT = 30
-
-# 3. 模块级变量（谨慎使用）
-_cache: dict = {}
-
-# 4. 异常类（如果有）
-class ServiceError(Exception):
-    """服务异常基类。"""
-    pass
-
-# 5. 类和函数
-class Service:
-    pass
-
-def process() -> None:
-    pass
-
-# 函数内部组织
-def complex_function():
-    # 1. 文档字符串
-    # 2. 输入验证
-    # 3. 局部变量定义
-    # 4. 主要逻辑
-    # 5. 返回结果
-    pass
-```
-
-## 12. 禁止事项
-
-- ❌ 不使用类型注解（公共 API）
-- ❌ 不使用文档字符串（公共函数/类）
-- ❌ 可变类型作为默认参数 `def func(items=[])`
-- ❌ 裸 except 语句
-- ❌ 在 finally 中使用 return
-- ❌ 在循环中执行不必要的重复计算
-- ❌ 过深的嵌套（超过 3 层）
-- ❌ 过长的函数（超过 50 行）
-- ❌ 单个文件超过 500 行
-- ❌ 使用魔法数字（使用具名常量）
-
-## 13. 测试可读性
-
-### 测试文件命名
-
-```python
-# 测试文件：test_<module>.py 或 <module>_test.py
-# test_user_service.py 或 user_service_test.py
-# 推荐：test_<module>.py（pytest 默认识别）
-```
-
-### 测试函数命名
-
-```python
-# 格式：test_<function>_<scenario>_<expected>
-def test_create_user_valid_input_returns_success():
-    """测试创建用户 - 有效输入返回成功。"""
-    pass
-
-def test_create_user_duplicate_email_returns_error():
-    """测试创建用户 - 重复邮箱返回错误。"""
-    pass
-
-def test_parse_email_empty_string_raises_error():
-    """测试解析邮箱 - 空字符串抛出异常。"""
-    pass
-```
-
-### 测试结构（AAA 模式）
-
-```python
-def test_calculate_total_price():
-    # Arrange（准备）
-    cart = ShoppingCart()
-    cart.add_item(Item(price=100))
-    cart.add_item(Item(price=200))
-
-    # Act（执行）
-    total = cart.calculate_total()
-
-    # Assert（断言）
-    assert total == 300
-```
-
-### 参数化测试
 
 ```python
 import pytest
 
-@pytest.mark.parametrize("email,expected", [
-    ("user@example.com", True),
-    ("invalid-email", False),
-    ("@example.com", False),
-    ("user@", False),
-])
-def test_validate_email(email, expected):
-    assert validate_email(email) == expected
+
+@pytest.mark.parametrize(
+    ("email", "expected"),
+    [
+        ("user@example.com", True),
+        ("invalid-email", False),
+    ],
+)
+def test_validate_email(email: str, expected: bool) -> None:
+    assert validate_email(email) is expected
 ```
 
-### 测试夹具（Fixtures）
+- 测试名应描述行为、场景和预期。
+- 断言优先清晰、直接，不要依赖模糊真值。
+- 测试逻辑本身应比生产代码更简单。
 
-```python
-# conftest.py 或测试文件中
-import pytest
+## 11. 禁止事项
 
-@pytest.fixture
-def sample_user():
-    """创建测试用户夹具。"""
-    return User(
-        id="test-123",
-        name="测试用户",
-        email="test@example.com"
-    )
-
-@pytest.fixture
-def mock_db():
-    """模拟数据库夹具。"""
-    db = MagicMock()
-    db.query.return_value = []
-    return db
-
-# 使用夹具
-def test_user_service_create(sample_user, mock_db):
-    service = UserService(mock_db)
-    result = service.create(sample_user)
-    assert result.id == sample_user.id
-```
-
-### 异常测试
-
-```python
-import pytest
-
-def test_divide_by_zero_raises_error():
-    with pytest.raises(ZeroDivisionError):
-        divide(1, 0)
-
-def test_invalid_input_raises_type_error():
-    with pytest.raises(TypeError, match="must be numbers"):
-        add("1", 2)
-```
-
-### 测试中的模拟
-
-```python
-from unittest.mock import Mock, patch, MagicMock
-
-# 使用 Mock
-def test_with_mock():
-    mock_api = Mock()
-    mock_api.get.return_value = {"status": "ok"}
-
-    result = call_api(mock_api)
-
-    mock_api.get.assert_called_once_with("/endpoint")
-    assert result == {"status": "ok"}
-
-# 使用 patch 装饰器
-@patch('module.requests.get')
-def test_with_patch_decorator(mock_get):
-    mock_get.return_value.json.return_value = {"data": "test"}
-
-    result = fetch_data()
-
-    assert result == {"data": "test"}
-
-# 使用 patch 上下文
-def test_with_patch_context():
-    with patch('module.requests.get') as mock_get:
-        mock_get.return_value.json.return_value = {"data": "test"}
-        result = fetch_data()
-        assert result == {"data": "test"}
-```
-
-### 测试清晰度
-
-```python
-# ✅ 清晰的断言
-assert user.id is not None
-assert user.status == UserStatus.ACTIVE
-assert len(errors) == 0
-
-# ❌ 模糊的断言
-assert user
-assert user.status
-assert not errors
-
-# ✅ 带有清晰消息的断言
-assert total == 300, f"期望总价 300，实际{total}"
-```
-
-### 禁止事项（测试）
-
-- ❌ 测试函数命名不清晰（`test_1`, `test_something`）
-- ❌ 断言消息模糊不清
-- ❌ 测试用例缺少文档字符串
-- ❌ 测试逻辑过于复杂（测试本身应简单）
-- ❌ 测试之间有依赖关系
-- ❌ 使用真实的网络/数据库（应使用 mock）
+- ❌ 公共边界完全缺失类型信息
+- ❌ 可变对象作为默认参数
+- ❌ 裸 `except`
+- ❌ 过深嵌套（超过 3 层）
+- ❌ 超长函数或单文件职责失控
+- ❌ 魔法数字和无语义变量名
+- ❌ 用复杂推导式压缩本应拆开的逻辑

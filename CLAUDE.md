@@ -1,10 +1,15 @@
-# AI Code 全局编码约束配置
+# CLAUDE.md
 
-> 适用于 Claude Code、Trae 等 AI 编程助手
->
-> 详细规则：[rules/](rules/) 文件夹
->
-> **新手用户**：请阅读 [rules/newbie.md](rules/newbie.md) 了解默认技术栈和选型规则
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## 项目定位
+
+这是一个 AI 编码规则配置仓库，用于配置 Claude Code、Trae 等 AI 编程助手的行为。
+
+- 用 `CLAUDE.md` 作为项目主入口，集中声明默认技术栈、技能加载规则、Agent 加载规则和核心约束
+- 用 `rules/` 维护可复用的通用规则与多语言规范
+- 用 `skills/` 提供按场景加载的技能说明
+- 用 `agents/` 提供按语言划分的代码审查代理配置
 
 ---
 
@@ -26,8 +31,9 @@
 | Python 后端 | `python-rule` |
 | Python 代码检查 | `code-checker-python` |
 | Python 代码修复 | `code-fixer-python` |
-| Go 后端 | `go-rule` + `go-zero-rule` |
+| Go 后端 | `go-rule` |
 | Gin Web 后端 | `go-rule` + `gin-web-rule` |
+| Go-Zero 后端 | `go-rule` + `go-zero-rule` |
 | Go 代码检查 | `code-checker-go` |
 | Go 代码修复 | `code-fixer-go` |
 | Java 后端 | `java-rule` |
@@ -44,7 +50,7 @@
 
 ## Agents 加载规则 (代码审查)
 
-当需要进行深度代码审查 (Code Review) 时，调用对应语言的 Agent：
+当需要进行深度代码审查时，调用对应语言的 Agent：
 
 | 场景 | Agent |
 |------|--------|
@@ -52,14 +58,19 @@
 | Go 代码审查 | `go-reviewer` |
 | Java 代码审查 | `java-reviewer` |
 
+推荐闭环：
+- Python：`python-rule` → `code-checker-python` → `code-fixer-python` → `python-reviewer`
+- Go：`go-rule` → `code-checker-go` → `code-fixer-go` → `go-reviewer`
+- Java：`java-rule` → `code-checker-java` → `code-fixer-java` → `java-reviewer`
+
 ---
 
 ## 核心约束
 
 **代码风格**：
-- 缩进：4 空格 (Python/Go) / 2 空格 (JS/TS)
+- 缩进：4 空格 (Python) / Tab (Go) / 2 空格 (JS/TS)
 - 命名：snake_case (Python/Go) / camelCase (JS/TS)
-- 必须使用类型注解和文档字符串
+- 公共 API 优先提供清晰类型信息和必要文档字符串
 - 禁止魔法值、无意义变量名
 
 **安全基线**：
@@ -69,7 +80,8 @@
 
 **测试要求**：
 - 新功能必须有单元测试
-- 覆盖率目标：≥80%
+- 优先覆盖关键路径、错误分支和回归风险点
+- 不机械追求固定覆盖率数字
 
 ---
 
@@ -92,9 +104,10 @@
   - **Python**: [编码规范](rules/python/coding-standards.md) | [项目结构](rules/python/project-structure.md)
   - **Go**: [编码规范](rules/go/coding-standards.md) | [项目结构](rules/go/project-structure.md)
     - Gin Web 项目额外遵循 `gin-web-rule`
+    - Go-Zero 项目额外遵循 `go-zero-rule`
   - **Java**: [编码规范](rules/java/coding-standards.md) | [项目结构](rules/java/project-structure.md)
   - **前端**: [编码规范](rules/frontend/coding-standards.md) | [项目结构](rules/frontend/project-structure.md)
 
 ---
 
-*最后更新：2026-03-30*
+*最后更新：2026-04-03*

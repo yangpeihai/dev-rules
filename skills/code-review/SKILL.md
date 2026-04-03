@@ -9,6 +9,57 @@ description: "代码审查规范指南。Cover code review processes, reviewer r
 
 代码审查（Code Review）是保障代码质量、促进知识共享、提升团队整体技术水平的关键环节。本规范涵盖审查流程、角色职责、关注点、反馈规范和效率要求。
 
+`code-review` 更适合作为“上层审查规范”和“流程入口”来使用，而不是替代语言/框架专项检查。它负责统一 Review 的目标、范围、评论分级、合并门槛和协作方式；当需要深入某种语言、框架、接口或修复动作时，应联动对应专项 skill。
+
+## 使用方式
+
+### 适用场景
+
+- 需要做一次完整的代码审查
+- 需要明确 Reviewer / Author / Approver 的职责边界
+- 需要统一评论分级、回复要求和合并标准
+- 需要把专项检查、修复和复测串成一个闭环
+
+### 使用顺序
+
+1. 先用 `code-review` 确认本轮 Review 的目标、范围、角色和门槛
+2. 再按语言或技术栈联动对应 checker skill 做定向检查
+3. 对需要修改的问题，用对应 fixer skill 执行最小修复并回填结果
+4. 涉及接口行为验证时，再联动 `http-api-tester`
+5. 最后回到 `code-review` 口径，汇总评论级别、处理状态和是否满足合并条件
+
+## 范围与边界
+
+- 默认先确认 Review 范围，不擅自扩大到整个仓库
+- `code-review` 关注的是审查流程和质量门槛，不直接替代语言级细查
+- 当问题已经超出“审查结论”范畴，进入具体问题定位、修复或接口验证时，应切换到对应专项 skill
+- 若用户只要求看某次变更、某个 PR、某几个文件，应优先按该范围执行
+
+## 联动关系
+
+### `code-review` 与 checker skill
+
+- `code-review` 负责定义“怎么审、审到什么程度、如何表达结论”
+- `code-checker-go`、`code-checker-python`、`code-checker-java` 负责在已确认范围内做语言专项检查
+- 当 Review 需要产出结构化 findings 时，优先由 checker skill 生成，再回到 `code-review` 口径归类为 `[MUST]`、`[SHOULD]`、`[NICE]` 或 `[Q]`
+
+### `code-review` 与 fixer skill
+
+- `code-review` 负责定义哪些问题必须修、哪些可以协商、哪些只需解释
+- `code-fixer-go`、`code-fixer-python`、`code-fixer-java` 负责对已确认问题做最小修复
+- 修复完成后，应把修复结果回填到 Review 结论中，明确“已修复 / 已回复解释 / 待验证 / 不采纳原因”
+
+### `code-review` 与 `http-api-tester`
+
+- 当 Review 涉及接口行为、回归风险、鉴权、状态流转等问题时，不应只停留在静态判断
+- 这类问题可联动 `http-api-tester` 获取请求执行证据，再决定评论级别和合并结论
+
+### 常见闭环路径
+
+- 静态审查闭环：`code-review` → `code-checker-*` → Review结论
+- 修复闭环：`code-review` → `code-checker-*` → `code-fixer-*` → Review复验
+- 接口回归闭环：`code-review` → `code-checker-*` / 代码阅读 → `http-api-tester` → Review结论
+
 ## 提交前自检清单（CR-001）
 
 每位开发者在提交代码审查前，必须完成以下自检项：
