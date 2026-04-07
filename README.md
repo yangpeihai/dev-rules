@@ -184,6 +184,22 @@ dev-rules/
 
 其中项目级配置主入口为 `CLAUDE.md`。
 
+## 常见AI Coding工具使用方式
+
+### Claude Code 
+- 下载当前仓库至本地
+- 将仓库里的rules、skills 文件夹放置项目根目录下的 .claude/ 文件夹下面
+
+### Codex
+- 下载当前仓库至本地
+- 将仓库里的rules、skills 文件夹放置项目根目录下的 .agents/ 文件夹下面
+- 这里因为 codex 不支持rules文件夹的识别，可以使用`/init 补充 .agents/rules 下的约束`
+
+### Trae
+- 下载当前仓库至本地
+- 将仓库里的rules、skills 文件夹放置项目根目录下的 .trae/ 文件夹下面
+- 这里因为 trae 不支持rules文件夹嵌套的识别，可以将子文件夹下的文件复制到 .trae/rules/ 下面
+
 ## 维护建议
 
 - 更新 `CLAUDE.md` 时，同步检查 README 中的规则索引和技能映射。
