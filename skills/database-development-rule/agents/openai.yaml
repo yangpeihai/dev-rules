@@ -1,0 +1,4 @@
+interface:
+  display_name: "数据库开发规范"
+  short_description: "数据库表设计、SQL 与 MyBatis-Plus 规范"
+  default_prompt: "Use $database-development-rule to review a table design, DDL, SQL, or MyBatis-Plus mapping against the team database rules."
